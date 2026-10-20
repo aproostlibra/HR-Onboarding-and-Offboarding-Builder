@@ -6,6 +6,11 @@ The builder is a single HTML file. Open it in a browser, adjust the form with cl
 
 > The user interface is in Dutch. This README explains the tool in English.
 
+<img width="2160" height="1350" alt="builder-general" src="https://github.com/user-attachments/assets/884fd26e-a455-45f2-b2cc-065ea6706e54" />
+<img width="2160" height="1350" alt="builder-rules" src="https://github.com/user-attachments/assets/ff8979a7-0f8d-4cde-9766-90c25e093bf5" />
+<img width="2160" height="1350" alt="form" src="https://github.com/user-attachments/assets/b58e1bf7-bcb9-49f0-a534-eb67d534d3bd" />
+<img width="662" height="936" alt="pdf" src="https://github.com/user-attachments/assets/a7a85334-2eb0-47a1-8593-918014d7f5e7" />
+
 ![The builder: settings on the left, a working preview on the right](docs/builder-general.png)
 
 ---
@@ -237,4 +242,4 @@ For developers who want to extend the tool:
 Designed by Antoine Troost.
 
 Every builder page and every form saved with it shows a small credit line, *"Designed by Antoine Troost - [current year]"*. The year updates automatically. The credit is part of the form runtime and is not intended to be removed.
-<img width="2160" height="1350" alt="builder-general" src="https://github.com/user-attachments/assets/884fd26e-a455-45f2-b2cc-065ea6706e54" />
+
