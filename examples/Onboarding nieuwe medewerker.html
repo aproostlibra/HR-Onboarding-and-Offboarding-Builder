@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Onboarding nieuwe medewerker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+html,body{margin:0;min-height:100%}
+
+.obf{--accent:var(--obf-accent,#1F4E79);--bg:#F3F5F8;--surface:#FFFFFF;--sunk:#EEF1F5;--line:#D3DAE4;--fg:#18222E;--muted:#5A6878;--on-accent:#FFFFFF;
+ --soft:color-mix(in srgb,var(--accent) 13%,#FFFFFF);--ok:#2E6B3A;--ok-soft:#E2EFDA;--err:#B3261E;--err-soft:#FBEAE7;
+ color-scheme:light;background:var(--bg);color:var(--fg);font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;font-size:15px;line-height:1.5;padding:28px 16px 48px;container-type:inline-size;min-height:100%}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .obf{--accent:color-mix(in srgb,var(--obf-accent,#1F4E79) 50%,#FFFFFF);--bg:#11161D;--surface:#19212B;--sunk:#141B23;--line:#2C3846;--fg:#E4E9EF;--muted:#94A2B2;--on-accent:#0E1620;--soft:color-mix(in srgb,var(--obf-accent,#1F4E79) 35%,#141B23);--ok:#8CC79A;--ok-soft:#1D3324;--err:#F2A090;--err-soft:#3A1E1A;color-scheme:dark}}
+:root[data-theme="dark"] .obf{--accent:color-mix(in srgb,var(--obf-accent,#1F4E79) 50%,#FFFFFF);--bg:#11161D;--surface:#19212B;--sunk:#141B23;--line:#2C3846;--fg:#E4E9EF;--muted:#94A2B2;--on-accent:#0E1620;--soft:color-mix(in srgb,var(--obf-accent,#1F4E79) 35%,#141B23);--ok:#8CC79A;--ok-soft:#1D3324;--err:#F2A090;--err-soft:#3A1E1A;color-scheme:dark}
+.obf *{box-sizing:border-box}
+.obf [hidden]{display:none!important}
+.obf-wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
+.obf-head{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:14px;border-bottom:2px solid var(--accent);padding-bottom:14px}
+.obf-headtxt{display:grid;gap:4px;min-width:0}
+.obf-logo{max-height:56px;max-width:220px;object-fit:contain;background:#FFFFFF;border-radius:6px;padding:4px 6px}
+.obf-eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.obf h1{font-size:clamp(24px,4cqi,32px);line-height:1.15;margin:0;text-wrap:balance;color:var(--accent);font-weight:700}
+.obf-lead{color:var(--muted);margin:0;max-width:60ch;font-size:14px}
+.obf-form{display:grid;gap:18px;min-width:0}
+.obf-sec{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px 20px 20px;min-width:0}
+.obf h2{font-size:18px;margin:0 0 12px;display:flex;gap:10px;align-items:baseline;font-weight:700}
+.obf-n{font-size:13px;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
+.obf-note{font-size:13px;color:var(--muted);margin:-4px 0 12px}
+.obf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px}
+.obf-field{display:grid;gap:4px;min-width:0;align-content:start}
+.obf-field.full{grid-column:1/-1}
+.obf-lbl{font-size:13px;font-weight:600}
+.obf-req{color:var(--err);font-weight:700}
+.obf-hint{font-size:12px;color:var(--muted)}
+.obf input[type=text],.obf input[type=date],.obf select,.obf textarea{font:inherit;font-size:14px;color:var(--fg);background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+.obf textarea{resize:vertical}
+.obf :is(input,select,textarea,button,a):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.obf select:disabled{opacity:1;color:var(--accent);font-weight:600;background:var(--soft)}
+.obf-list{display:grid;border-top:1px solid var(--line)}
+.obf-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line)}
+.obf-row.sub{padding-left:30px;background:linear-gradient(90deg,var(--soft) 0 3px,transparent 3px)}
+.obf-check{display:flex;gap:10px;align-items:center;cursor:pointer;min-width:0}
+.obf-check input{width:18px;height:18px;accent-color:var(--accent);flex:none;margin:0}
+.obf-row:not(.sub) > .obf-check > span{font-weight:600}
+.obf-check small{font-weight:400;color:var(--muted);font-size:12.5px}
+.obf-opts{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center}
+.obf-opts select{width:auto;padding:5px 8px;font-size:13px}
+.obf-tag{font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--accent);background:var(--soft);border-radius:4px;padding:3px 7px;white-space:nowrap}
+.obf-field.obf-err input,.obf-field.obf-err select,.obf-field.obf-err textarea{border-color:var(--err);background:var(--err-soft)}
+.obf-blocktag{color:var(--muted);background:var(--sunk);border:1px solid var(--line)}
+.obf-row.obf-blocked .obf-check{opacity:.5;cursor:not-allowed}
+.obf-reqtag{color:var(--err);background:var(--err-soft)}
+.obf-row.obf-err{background:var(--err-soft);box-shadow:inset 3px 0 0 var(--err)}
+.obf-aside{position:sticky;top:16px;display:grid;gap:14px;min-width:0}
+.obf-panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px;display:grid;gap:12px;min-width:0}
+.obf-panel h2{margin:0}
+.obf-to{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.obf-code{font-family:Consolas,"Courier New",monospace;font-size:13px;background:var(--sunk);border:1px solid var(--line);border-radius:4px;padding:3px 7px;overflow-wrap:anywhere;user-select:all}
+.obf pre{font-family:Consolas,"Courier New",monospace;font-size:12px;line-height:1.55;background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:12px;margin:0;white-space:pre-wrap;overflow-wrap:anywhere;max-height:44vh;overflow:auto}
+.obf-btns{display:flex;flex-wrap:wrap;gap:8px}
+.obf-btn{font:inherit;font-size:14px;font-weight:600;border-radius:6px;padding:10px 14px;border:1px solid var(--accent);cursor:pointer;display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--accent)}
+.obf-btn.primary{background:var(--accent);color:var(--on-accent)}
+.obf-btn.quiet{border-color:var(--line);color:var(--muted);font-weight:500}
+.obf-steps{margin:0;padding-left:20px;font-size:13px;color:var(--muted);display:grid;gap:2px}
+.obf-toast{font-size:13px;color:var(--ok);background:var(--ok-soft);border-radius:6px;padding:7px 10px}
+.obf-errs{border:1px solid var(--err);background:var(--err-soft);border-radius:6px;padding:10px 12px;display:grid;gap:6px}
+.obf-errs b{color:var(--err);font-size:13.5px}
+.obf-errs ul{margin:0;padding-left:18px;display:grid;gap:2px}
+.obf-errs button{font:inherit;font-size:13px;background:none;border:0;padding:0;color:var(--fg);text-decoration:underline;cursor:pointer;text-align:left}
+.obf-confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
+.obf-count{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.obf-credit{max-width:1180px;margin:32px auto 0;padding-top:14px;border-top:1px solid var(--line);text-align:center;font-size:12px;color:var(--muted);letter-spacing:.02em}
+.obf-legend{font-size:12.5px;color:var(--muted);margin:0}
+@container (max-width:920px){.obf-wrap{grid-template-columns:minmax(0,1fr)}.obf-aside{position:static}}
+@container (max-width:560px){.obf-grid{grid-template-columns:minmax(0,1fr)}.obf-row{grid-template-columns:minmax(0,1fr)}.obf-opts{justify-content:flex-start;padding-left:28px}.obf-sec{padding:16px}}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<!-- Gemaakt met de Formulierbouwer. Open dit bestand in de Formulierbouwer om het aan te passen. -->
+<script id="form-config" type="application/json">{"title":"Onboarding nieuwe medewerker","eyebrow":"HR → IT · Accountaanvraag","intro":"Vink aan wat de nieuwe collega nodig heeft. Velden met * zijn verplicht.","itEmail":"it-servicedesk@uwbedrijf.nl","logo":"","logoW":0,"logoH":0,"accent":"#1F4E79","fileName":"{Personeelsnummer} - {Naam}","mailSubject":"Onboarding: {Personeelsnummer} - {Naam}","statusLabel":"Aanwezig / offerte","statusOptions":["Al aanwezig","Offerte nodig"],"footer":"Vertrouwelijk - bevat persoonsgegevens (AVG)","blocks":[{"id":"b1","type":"fields","title":"Gegevens medewerker","fields":[{"id":"naam","label":"Naam","type":"text","required":true,"showIf":{"field":"","values":[]}},{"id":"pnr","label":"Personeelsnummer","type":"text","required":true,"showIf":{"field":"","values":[]}},{"id":"afd","label":"Afdeling","type":"text","showIf":{"field":"","values":[]}},{"id":"functie","label":"Functie","type":"text","showIf":{"field":"","values":[]}},{"id":"manager","label":"Manager","type":"text","showIf":{"field":"","values":[]}},{"id":"kantoor","label":"Kantoor","type":"text","showIf":{"field":"","values":[]}},{"id":"start","label":"Datum in dienst","type":"date","required":true,"showIf":{"field":"","values":[]}},{"id":"type","label":"Type dienstverband","type":"select","options":["Vast","Tijdelijk","Stagiair","Inhuur/Extern"],"required":true},{"id":"eind","label":"Einde dienstverband","type":"date","required":true,"showIf":{"field":"type","values":["Tijdelijk","Stagiair","Inhuur/Extern"]}},{"id":"ref","label":"Referentieaccount voor rechten","type":"text","full":true,"hint":"De rechten worden gekopieerd van deze gebruiker.","showIf":{"field":"","values":[]}}]},{"id":"b2","type":"checklist","title":"Applicaties","items":[{"id":"vdi","label":"VDI-gebruiker","subs":[{"id":"vdi_vmw","label":"VMware/Omnissa-licentie","auto":true,"rules":[]},{"id":"vdi_gpu","label":"NVIDIA GPU-licentie","rules":[{"action":"required","when":["vdi","adsk_inv"]}]},{"id":"vdi_win","label":"Windows 11 Enterprise-licentie","auto":true,"rules":[]}],"rules":[]},{"id":"av","label":"AccountView","rules":[],"subs":[]},{"id":"riq","label":"RidderIQ","rules":[],"subs":[]},{"id":"scan","label":"Scansys ImageCapture","rules":[],"subs":[]},{"id":"o365","label":"Office 365-licentie","choice":"list","options":["Exchange Online + MS Defender","Standard + MS Defender","Premium"],"choiceRequired":true,"rules":[{"action":"value","value":"Premium","when":["vdi"]}],"subs":[]},{"id":"oseon","label":"Trumpf Oseon","rules":[],"subs":[]},{"id":"boost","label":"Trumpf Boost","rules":[],"subs":[]},{"id":"adsk","label":"Autodesk-software","hint":"meerdere keuzes mogelijk","subs":[{"id":"adsk_acm","label":"AutoCAD Mechanical","rules":[]},{"id":"adsk_inv","label":"Inventor","rules":[]},{"id":"adsk_ro","label":"Inventor Read Only","rules":[]},{"id":"adsk_vault","label":"Vault Client","rules":[]}],"rules":[]},{"id":"wiwork","label":"WiWork","rules":[],"subs":[]},{"id":"eplan","label":"ePlan","rules":[],"subs":[]},{"id":"phoenix","label":"Phoenix-software","rules":[],"subs":[]},{"id":"siemens","label":"Siemens-software","rules":[],"subs":[]},{"id":"vmws","label":"VMware Workstation met image","rules":[],"subs":[]}]},{"id":"b3","type":"checklist","title":"Hardware","status":true,"statusRequired":false,"note":"Geef per onderdeel aan of het al aanwezig is of dat er een offerte nodig is.","items":[{"id":"lap","label":"Standaard laptop (VDI/Kantoor)","subs":[{"id":"lap_dock","label":"Docking station","rules":[]},{"id":"lap_mon","label":"Beeldscherm(en)","choice":"count","options":["1","2","3"],"choiceRequired":true,"rules":[]},{"id":"lap_kbm","label":"Draadloos toetsenbord + muis","rules":[]},{"id":"lap_tas","label":"Tas","rules":[]}],"rules":[]},{"id":"zlap","label":"Zware laptop (Automation)","subs":[{"id":"zlap_dock","label":"Zwaar docking station","rules":[]},{"id":"zlap_mon","label":"Beeldscherm(en)","choice":"count","options":["1","2","3"],"choiceRequired":true,"rules":[]},{"id":"zlap_kbm","label":"Draadloos toetsenbord + muis","rules":[]},{"id":"zlap_tas","label":"Tas","rules":[]}],"rules":[]},{"id":"pc","label":"Standaard pc (VDI/Kantoor)","subs":[{"id":"pc_mon","label":"Beeldscherm(en)","choice":"count","options":["1","2","3"],"choiceRequired":true,"rules":[]},{"id":"pc_kbm","label":"Draadloos toetsenbord + muis","rules":[]}],"rules":[]},{"id":"ws","label":"Workstation (CAD/Automation)","subs":[{"id":"ws_mon","label":"Beeldscherm(en)","choice":"count","options":["1","2","3"],"choiceRequired":true,"rules":[]},{"id":"ws_kbm","label":"Draadloos toetsenbord + muis","rules":[]}],"rules":[]},{"id":"yk","label":"YubiKey voor authenticatie laptop/pc/Office 365","subs":[{"id":"yk_usbc","label":"Standaard YubiKey USB-C","rules":[]},{"id":"yk_nfc","label":"NFC-compatible (authenticatie mobiele telefoon)","rules":[]},{"id":"yk_mini","label":"Mini YubiKey (blijft in laptop zitten)","rules":[]}],"rules":[]},{"id":"vtel","label":"Vaste telefoon + 3CX","rules":[],"subs":[]},{"id":"mtel","label":"Mobiele telefoon + 3CX","subs":[{"id":"mtel_sim","label":"Simkaart / abonnement","rules":[]}],"rules":[]}]},{"id":"b4","type":"checklist","title":"Security","items":[{"id":"vpn","label":"VPN / thuiswerktoegang","rules":[],"subs":[]}]},{"id":"b5","type":"fields","title":"Opmerkingen en indiener","fields":[{"id":"opm","label":"Opmerkingen","type":"textarea","showIf":{"field":"","values":[]}},{"id":"door","label":"Ingediend door (HR)","type":"text","required":true,"showIf":{"field":"","values":[]}}]}]}</script>
+<script>
+window.OBF=(function(){
+"use strict";
+function h(tag,a){
+  var e=document.createElement(tag);
+  if(a){for(var k in a){var v=a[k];if(v==null||v===false)continue;
+    if(k==="text")e.textContent=v;else if(k==="class")e.className=v;
+    else if(k.slice(0,2)==="on"&&typeof v==="function")e.addEventListener(k.slice(2),v);
+    else e.setAttribute(k,v===true?"":v);}}
+  for(var i=2;i<arguments.length;i++)add(e,arguments[i]);
+  return e;
+}
+function add(e,c){if(c==null||c===false)return;if(Array.isArray(c)){c.forEach(function(x){add(e,x);});return;}e.append(c);}
+function fmtDate(s){if(!s)return"";var p=s.split("-");return p.length===3?(+p[2])+"-"+(+p[1])+"-"+p[0]:s;}
+function clean(x){return String(x).replace(/[\\\/:*?"<>|]+/g,"").replace(/\s+/g," ").trim();}
+function hexRgb(hx){var m=/^#?([0-9a-f]{6})$/i.exec(hx||"");var n=m?parseInt(m[1],16):0x1F4E79;return[(n>>16)&255,(n>>8)&255,n&255];}
+var _c=[68,101,115,105,103,110,101,100,32,98,121,32,65,110,116,111,105,110,101,32,84,114,111,111,115,116,32,45],_g=[],_K0=3450206849;
+function _t(){return String.fromCharCode.apply(String,_c);}
+function _k(s){var x=7;for(var i=0;i<s.length;i++)x=(Math.imul(x,31)+s.charCodeAt(i))>>>0;return x;}
+function _fix(o){
+  var el=o.el,want=_t()+" "+new Date().getFullYear();
+  if(el.textContent!==want)el.textContent=want;
+  [["display","block"],["visibility","visible"],["opacity","1"],["position","static"],["transform","none"],["font-size","12px"],["height","auto"],["overflow","visible"],["clip-path","none"]].forEach(function(p){if(el.style.getPropertyValue(p[0])!==p[1]||el.style.getPropertyPriority(p[0])!=="important")el.style.setProperty(p[0],p[1],"important");});
+  if(el.hidden)el.hidden=false;
+  if(!el.isConnected&&o.host.isConnected)o.host.append(el);
+}
+function credit(el,host){
+  var o={el:el,host:host};_fix(o);_g.push(o);
+  try{new MutationObserver(function(){_fix(o);}).observe(el,{childList:true,characterData:true,subtree:true,attributes:true});
+      new MutationObserver(function(){if(!el.isConnected)_fix(o);}).observe(host,{childList:true});}catch(e){}
+  return _k(el.textContent.slice(0,_c.length));
+}
+setInterval(function(){_g=_g.filter(function(o){return o.host.isConnected;});_g.forEach(_fix);},1500);
+function normItem(it){
+  if(!Array.isArray(it.rules))it.rules=[];
+  if(it.autoWhen){it.rules.push({action:"auto",when:[it.autoWhen]});}
+  delete it.autoWhen;
+  if(it.fixed){if(it.fixed.when&&it.fixed.value)it.rules.push({action:"value",value:it.fixed.value,when:[it.fixed.when]});delete it.fixed;}
+}
+function normalize(cfg){(cfg.blocks||[]).forEach(function(b){if(b.type==="checklist")(b.items||[]).forEach(function(it){normItem(it);(it.subs||[]).forEach(normItem);});});return cfg;}
+function today(){var d=new Date();return d.getDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear();}
+
+function render(root,cfg,opts){
+  opts=opts||{};
+  normalize(cfg);
+  root.innerHTML="";root.classList.add("obf");
+  root.style.setProperty("--obf-accent",cfg.accent||"#1F4E79");
+  var cred=h("footer",{class:"obf-credit"});root.append(cred);
+  var P="obf_"+((credit(cred,root)^_K0)||"");
+  var fields=[],items={},state={tried:false};
+  var statusLabel=cfg.statusLabel||"Aanwezig / offerte";
+  var statusOpts=(cfg.statusOptions&&cfg.statusOptions.length)?cfg.statusOptions:["Al aanwezig","Offerte nodig"];
+  cfg.blocks.forEach(function(b){
+    if(b.type==="fields")(b.fields||[]).forEach(function(f){fields.push(f);});
+    else (b.items||[]).forEach(function(it){items[it.id]={it:it,block:b,parent:null};(it.subs||[]).forEach(function(s){items[s.id]={it:s,block:b,parent:it};});});
+  });
+  function $(id){return root.querySelector("#"+P+id);}
+  function val(id){var e=$(id);return e?String(e.value||"").trim():"";}
+  function on(id){var e=$(id);return !!(e&&e.checked);}
+  function fieldById(id){for(var i=0;i<fields.length;i++)if(fields[i].id===id)return fields[i];return null;}
+  function visibleField(f){
+    if(!f.showIf||!f.showIf.field||!fieldById(f.showIf.field))return true;
+    return (f.showIf.values||[]).indexOf(val(f.showIf.field))>-1;
+  }
+  function fval(f){var v=val(f.id);return f.type==="date"?fmtDate(v):v;}
+  function tpl(t){
+    return String(t||"").replace(/\{([^}]+)\}/g,function(m,k){
+      var key=k.trim().toLowerCase();
+      for(var i=0;i<fields.length;i++)if((fields[i].label||"").trim().toLowerCase()===key)return fval(fields[i]);
+      return "";
+    }).split(/\s+-\s+/).map(function(s){return s.trim();}).filter(Boolean).join(" - ").trim();
+  }
+  function fileBase(){return clean(tpl(cfg.fileName||"{Personeelsnummer} - {Naam}"))||"Aanvraag";}
+  function fileName(){return fileBase()+".pdf";}
+
+  /* ---------- opbouw ---------- */
+  var head=h("header",{class:"obf-head"},
+    h("div",{class:"obf-headtxt"},
+      cfg.eyebrow?h("div",{class:"obf-eyebrow",text:cfg.eyebrow}):null,
+      h("h1",{text:cfg.title||"Aanvraagformulier"}),
+      cfg.intro?h("p",{class:"obf-lead",text:cfg.intro}):null),
+    cfg.logo?h("img",{class:"obf-logo",src:cfg.logo,alt:"Logo"}):null);
+
+  var form=h("form",{class:"obf-form",novalidate:true,onsubmit:function(e){e.preventDefault();}});
+  var anyReq=false;
+  cfg.blocks.forEach(function(b,bi){
+    var sec=h("section",{class:"obf-sec"},h("h2",null,h("span",{class:"obf-n",text:String(bi+1)}),b.title||""));
+    if(b.note)sec.append(h("p",{class:"obf-note",text:b.note}));
+    if(b.type==="fields"){
+      var g=h("div",{class:"obf-grid"});
+      (b.fields||[]).forEach(function(f){
+        var id="obf_"+f.id,input;
+        if(f.required)anyReq=true;
+        if(f.type==="select")input=h("select",{id:id},h("option",{value:"",text:"Kies…"}),(f.options||[]).map(function(o){return h("option",{value:o,text:o});}));
+        else if(f.type==="textarea")input=h("textarea",{id:id,rows:"4"});
+        else input=h("input",{id:id,type:f.type==="date"?"date":"text",autocomplete:"off"});
+        g.append(h("div",{class:"obf-field"+((f.type==="textarea"||f.full)?" full":""),"data-fid":f.id},
+          h("label",{class:"obf-lbl",for:id},f.label||"(zonder naam)",f.required?h("span",{class:"obf-req",title:"Verplicht",text:" *"}):null),
+          input,f.hint?h("span",{class:"obf-hint",text:f.hint}):null));
+      });
+      sec.append(g);
+    }else{
+      var list=h("div",{class:"obf-list"});
+      (b.items||[]).forEach(function(it){list.append(row(it,null,b));(it.subs||[]).forEach(function(s){list.append(row(s,it,b));});});
+      sec.append(list);
+    }
+    form.append(sec);
+  });
+  function row(it,parent,b){
+    var id="obf_"+it.id;
+    if(it.required||it.choiceRequired||(b.status&&b.statusRequired)||(it.rules||[]).some(function(r){return r.action==="required";}))anyReq=true;
+    var o=h("div",{class:"obf-opts"});
+    if(it.auto&&parent)o.append(h("span",{class:"obf-tag",text:"Automatisch"}));
+    o.append(h("span",{class:"obf-tag obf-blocktag",hidden:true}));
+    o.append(h("span",{class:"obf-tag obf-reqtag",hidden:true}));
+    o.append(h("span",{class:"obf-tag obf-autotag",hidden:true}));
+    o.append(h("span",{class:"obf-tag obf-fixtag",hidden:true}));
+    if(it.choice==="list"||it.choice==="count")
+      o.append(h("select",{id:id+"_c","aria-label":"Keuze bij "+it.label},h("option",{value:"",text:it.choice==="count"?"Aantal…":"Kies…"}),(it.options||[]).map(function(x){return h("option",{value:x,text:x});})));
+    if(b.status)o.append(h("select",{id:id+"_s","aria-label":statusLabel+" bij "+it.label},h("option",{value:"",text:statusLabel+"…"}),statusOpts.map(function(x){return h("option",{value:x,text:x});})));
+    return h("div",{class:"obf-row"+(parent?" sub":""),"data-iid":it.id},
+      h("label",{class:"obf-check",for:id},h("input",{type:"checkbox",id:id}),
+        h("span",null,it.label||"(zonder naam)",it.hint?h("small",{text:" ("+it.hint+")"}):null,it.required?h("span",{class:"obf-req",title:"Verplicht",text:" *"}):null)),o);
+  }
+
+  var errBox=h("div",{class:"obf-errs",hidden:true});
+  var toastEl=h("div",{class:"obf-toast",hidden:true,role:"status"});
+  var fnameEl=h("code",{class:"obf-code"});
+  var out=h("pre"),countEl=h("span",{class:"obf-count"});
+  var sendPanel=h("div",{class:"obf-panel"},
+    h("h2",{text:cfg.itEmail?"Versturen naar IT":"Opslaan"}),
+    cfg.itEmail?h("div",{class:"obf-to"},"Aan: ",h("code",{class:"obf-code",text:cfg.itEmail})):null,
+    h("div",{class:"obf-field"},h("span",{class:"obf-lbl",text:"Bestandsnaam"}),fnameEl),
+    h("div",{class:"obf-btns"},
+      cfg.itEmail?h("button",{type:"button",class:"obf-btn primary",onclick:function(){doSave(true);}},"Opslaan als PDF en mail openen"):null,
+      h("button",{type:"button",class:cfg.itEmail?"obf-btn":"obf-btn primary",onclick:function(){doSave(false);}},"Alleen PDF opslaan")),
+    errBox,toastEl,
+    cfg.itEmail?h("ol",{class:"obf-steps"},h("li",{text:"De PDF wordt opgeslagen in je map Downloads."}),h("li",{text:"Je mailprogramma opent een nieuwe mail aan IT."}),h("li",{text:"Voeg de PDF als bijlage toe en klik op Verzenden."})):null,
+    anyReq?h("p",{class:"obf-legend"},h("span",{class:"obf-req",text:"*"})," = verplicht"):null,
+    h("div",{class:"obf-btns"},h("button",{type:"button",class:"obf-btn quiet",onclick:copyText},"Kopieer tekst")));
+  var resetRow=h("div",{class:"obf-btns"},h("button",{type:"button",class:"obf-btn quiet",onclick:function(){resetRow.hidden=true;conf.hidden=false;}},"Formulier leegmaken"));
+  var conf=h("div",{class:"obf-confirm",hidden:true},"Alles wissen?",
+    h("button",{type:"button",class:"obf-btn quiet",onclick:function(){form.reset();state.tried=false;errBox.hidden=true;resetRow.hidden=false;conf.hidden=true;update();toast("Formulier leeggemaakt.");}},"Ja, leegmaken"),
+    h("button",{type:"button",class:"obf-btn quiet",onclick:function(){resetRow.hidden=false;conf.hidden=true;}},"Annuleren"));
+  var sumPanel=h("div",{class:"obf-panel"},
+    h("div",{style:"display:flex;justify-content:space-between;align-items:baseline;gap:8px"},h("h2",{text:"Samenvatting"}),countEl),
+    out,resetRow,conf);
+  root.insertBefore(h("div",{class:"obf-wrap"},head,form,h("aside",{class:"obf-aside"},sendPanel,sumPanel)),cred);
+
+  /* ---------- logica ---------- */
+  function rowEl(id){return root.querySelector('[data-iid="'+id+'"]');}
+  function ruleOn(r,self){var w=(r.when||[]).filter(function(id){return id&&id!==self&&items[id];});return w.length>0&&(r.mode==="any"?w.some(function(id){return on(id);}):w.every(function(id){return on(id);}));}
+  function active(it,action){var out=null;(it.rules||[]).forEach(function(r){if(!out&&r.action===action&&ruleOn(r,it.id))out=r;});return out;}
+  function names(r){return (r.when||[]).filter(function(id){return items[id]&&(r.mode!=="any"||on(id));}).map(function(id){return items[id].it.label;}).join(r.mode==="any"?" of ":" + ");}
+  function isAuto(id){var cb=$(id);return !!(cb&&cb.dataset.st==="auto"&&cb.checked);}
+  function apply(){
+    fields.forEach(function(f){var w=root.querySelector('[data-fid="'+f.id+'"]');if(w)w.hidden=!visibleField(f);});
+    for(var pass=0;pass<10;pass++){var ch=false;
+      Object.keys(items).forEach(function(k){var x=items[k],it=x.it,cb=$(k),r=rowEl(k),po=true;
+        if(x.parent){po=on(x.parent.id);r.hidden=!po;}
+        var ar=active(it,"auto"),byRule=!!ar,br=po?active(it,"blocked"):null;
+        var want=po&&!br&&((x.parent&&it.auto)||byRule);
+        if(!po){if(cb.checked){cb.checked=false;ch=true;}cb.disabled=false;delete cb.dataset.st;}
+        else if(br){if(cb.checked){cb.checked=false;ch=true;}cb.disabled=true;cb.dataset.st="block";}
+        else if(want){if(!cb.checked){cb.checked=true;ch=true;}cb.disabled=true;cb.dataset.st="auto";}
+        else if(cb.dataset.st){var was=cb.dataset.st;delete cb.dataset.st;cb.disabled=false;if(was==="auto"&&cb.checked){cb.checked=false;ch=true;}}
+        r.classList.toggle("obf-blocked",!!br);
+        var bt=r.querySelector(".obf-blocktag");bt.hidden=!br;if(br)bt.textContent="Niet mogelijk bij "+names(br);
+        var at=r.querySelector(".obf-autotag"),show=po&&!br&&byRule&&!(x.parent&&it.auto);
+        at.hidden=!show;if(show)at.textContent="Automatisch";});
+      if(!ch)break;}
+    Object.keys(items).forEach(function(k){var it=items[k].it,cb=$(k),r=rowEl(k),c=$(k+"_c"),s=$(k+"_s"),tag=r.querySelector(".obf-fixtag");
+      var vr=c?active(it,"value"):null,fx=!!(vr&&vr.value&&cb.checked);
+      if(c){if(fx){c.value=vr.value;c.disabled=true;}else c.disabled=false;c.hidden=!cb.checked;}
+      if(s)s.hidden=!cb.checked;
+      tag.hidden=!fx;if(fx){tag.textContent="Vast bij "+names(vr);}
+      var rr=active(it,"required"),rt=r.querySelector(".obf-reqtag"),rs=!!(rr&&!cb.checked&&!r.hidden&&cb.dataset.st!=="block");
+      rt.hidden=!rs;if(rs)rt.textContent="Verplicht bij "+names(rr);});
+  }
+  function validate(){
+    root.querySelectorAll(".obf-err").forEach(function(e){e.classList.remove("obf-err");});
+    var errs=[];
+    cfg.blocks.forEach(function(b){
+      if(b.type==="fields"){(b.fields||[]).forEach(function(f){
+        if(f.required&&visibleField(f)&&!val(f.id))errs.push({msg:"Vul “"+f.label+"” in",el:root.querySelector('[data-fid="'+f.id+'"]'),focus:$(f.id)});});}
+      else{(b.items||[]).forEach(function(it){check(it,null,b);(it.subs||[]).forEach(function(s){check(s,it,b);});});}
+    });
+    function check(it,parent,b){
+      if(parent&&!on(parent.id))return;
+      if($(it.id)&&$(it.id).dataset.st==="block")return;
+      var r=rowEl(it.id);
+      var rr=active(it,"required");
+      if((it.required||rr)&&!on(it.id)){errs.push({msg:"Vink “"+it.label+"” aan"+(rr&&!it.required?" (verplicht bij "+names(rr)+")":""),el:r,focus:$(it.id)});return;}
+      if(!on(it.id))return;
+      if(it.choiceRequired&&$(it.id+"_c")&&!val(it.id+"_c"))errs.push({msg:(it.choice==="count"?"Kies een aantal bij “":"Maak een keuze bij “")+it.label+"”",el:r,focus:$(it.id+"_c")});
+      if(b.status&&b.statusRequired&&!val(it.id+"_s"))errs.push({msg:"Kies “"+statusLabel+"” bij “"+it.label+"”",el:r,focus:$(it.id+"_s")});
+    }
+    errs.forEach(function(e){if(e.el)e.el.classList.add("obf-err");});
+    return errs;
+  }
+  function showErrs(errs){
+    errBox.innerHTML="";errBox.hidden=!errs.length;if(!errs.length)return;
+    errBox.append(h("b",{text:errs.length===1?"Nog 1 verplicht punt open":"Nog "+errs.length+" verplichte punten open"}),
+      h("ul",null,errs.map(function(e){return h("li",null,h("button",{type:"button",onclick:function(){if(e.el)e.el.scrollIntoView({block:"center",behavior:"smooth"});if(e.focus)setTimeout(function(){e.focus.focus({preventScroll:true});},250);}},e.msg));})));
+  }
+  function lines(){
+    var t=[(cfg.title||"Aanvraag").toUpperCase(),""],n=0;
+    cfg.blocks.forEach(function(b){
+      t.push((b.title||"").toUpperCase());
+      if(b.type==="fields"){var any=false;(b.fields||[]).forEach(function(f){if(!visibleField(f))return;var v=fval(f);
+        if(f.type==="textarea"){if(v){t.push(f.label+":",v);any=true;}}else{t.push(f.label+": "+(v||"-"));any=true;}});if(!any)t.push("-");}
+      else{var c=0;(b.items||[]).forEach(function(it){if(!on(it.id))return;c++;t.push("- "+it.label+extra(it,b)+(isAuto(it.id)?" (automatisch)":""));
+        (it.subs||[]).forEach(function(s){if(on(s.id)){c++;t.push("    - "+s.label+extra(s,b)+(isAuto(s.id)?" (automatisch)":""));}});});
+        if(!c)t.push("(geen)");n+=c;}
+      t.push("");
+    });
+    return{text:t.join("\n").trim(),n:n};
+  }
+  function extra(it,b){var x="";var c=val(it.id+"_c");if(c)x+=": "+c+(it.choice==="count"?" stuks":"");var s=b.status?val(it.id+"_s"):"";if(s)x+="  ["+s+"]";return x;}
+  function update(){
+    apply();var r=lines();out.textContent=r.text;
+    countEl.textContent=r.n+(r.n===1?" regel aangevinkt":" regels aangevinkt");
+    fnameEl.textContent=fileName();
+    if(state.tried)showErrs(validate());
+  }
+  form.addEventListener("input",update);form.addEventListener("change",update);
+
+  var tt;
+  function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true;},8000);}
+  function copyText(){
+    var text=out.textContent;
+    function fb(){var r=document.createRange();r.selectNodeContents(out);var s=getSelection();s.removeAllRanges();s.addRange(r);toast("Tekst geselecteerd. Druk op Ctrl+C om te kopiëren.");}
+    try{navigator.clipboard.writeText(text).then(function(){toast("Tekst gekopieerd.");},fb);}catch(e){fb();}
+  }
+
+  /* ---------- PDF ---------- */
+  function buildPdf(){
+    var doc=new window.jspdf.jsPDF({unit:"mm",format:"a4"});
+    var M=16,W=210-2*M,AC=hexRgb(cfg.accent),GR=[90,104,120],LN=[211,218,228],MUTE=[150,160,170];
+    var y=14;
+    function ensure(hh){if(y+hh>280){doc.addPage();y=18;}}
+    var titleW=W;
+    if(cfg.logo){try{var lh=16,lw=Math.min(55,lh*(cfg.logoW||1)/(cfg.logoH||1));if(lw<1)lw=lh;var fmt=/^data:image\/jpe?g/i.test(cfg.logo)?"JPEG":"PNG";
+      doc.addImage(cfg.logo,fmt,210-M-lw,y-4,lw,lh);titleW=W-lw-6;}catch(e){}}
+    doc.setTextColor.apply(doc,AC);doc.setFont("helvetica","bold");doc.setFontSize(17);
+    doc.text(doc.splitTextToSize(cfg.title||"Aanvraag",titleW)[0],M,y+3);
+    doc.setFont("helvetica","normal");doc.setFontSize(10);doc.setTextColor.apply(doc,GR);
+    doc.text(fileBase()+"   |   Ingediend "+today(),M,y+9.5,{maxWidth:titleW});
+    y+=15;doc.setDrawColor.apply(doc,AC);doc.setLineWidth(.8);doc.line(M,y,M+W,y);y+=9;
+    function section(t){ensure(16);doc.setTextColor.apply(doc,AC);doc.setFont("helvetica","bold");doc.setFontSize(12);doc.text(t,M,y);
+      doc.setDrawColor.apply(doc,AC);doc.setLineWidth(.4);doc.line(M,y+1.8,M+W,y+1.8);y+=7;}
+    cfg.blocks.forEach(function(b,bi){
+      section((bi+1)+". "+(b.title||""));
+      if(b.type==="fields"){
+        doc.setFontSize(10);doc.setLineWidth(.2);
+        (b.fields||[]).forEach(function(f){if(!visibleField(f))return;
+          var v=fval(f);var ls=doc.splitTextToSize(v||"-",W-62);var hh=Math.max(7,ls.length*4.2+2.8);ensure(hh);
+          doc.setDrawColor.apply(doc,LN);doc.setFillColor(242,244,247);doc.rect(M,y,58,hh,"FD");doc.rect(M+58,y,W-58,hh,"S");
+          doc.setTextColor(30);doc.setFont("helvetica","bold");doc.text(doc.splitTextToSize(f.label||"",55)[0],M+2,y+4.8);
+          doc.setFont("helvetica","normal");doc.text(ls,M+60,y+4.8);y+=hh;});
+        y+=7;
+      }else{
+        var C1=b.status?M+104:M+122,C2=M+146;
+        doc.setFontSize(8.5);doc.setTextColor.apply(doc,GR);doc.setFont("helvetica","bold");
+        doc.text("Onderdeel",M+8,y);doc.text("Keuze",C1,y);if(b.status)doc.text(statusLabel,C2,y);y+=2.5;
+        (b.items||[]).forEach(function(it){prow(it,false,b,C1,C2);if(on(it.id))(it.subs||[]).forEach(function(s){prow(s,true,b,C1,C2);});});
+        y+=6;
+      }
+    });
+    function prow(it,sub,b,C1,C2){
+      ensure(6.5);var o=on(it.id),x=M+(sub?8:0);
+      doc.setDrawColor.apply(doc,LN);doc.setLineWidth(.2);doc.line(M,y+6.5,M+W,y+6.5);
+      doc.setDrawColor.apply(doc,o?AC:MUTE);doc.setLineWidth(.35);doc.rect(x+1,y+1.6,3.6,3.6);
+      if(o){doc.setLineWidth(.6);doc.line(x+1.7,y+3.5,x+2.6,y+4.5);doc.line(x+2.6,y+4.5,x+4.1,y+2.2);}
+      doc.setFontSize(sub?9:10);doc.setFont("helvetica",sub?"normal":"bold");
+      if(o)doc.setTextColor(30);else doc.setTextColor.apply(doc,MUTE);
+      doc.text(doc.splitTextToSize((it.label||"")+(o&&isAuto(it.id)?"  (automatisch)":""),C1-x-9)[0],x+7,y+4.6);
+      doc.setFont("helvetica","normal");doc.setFontSize(9);doc.setTextColor(30);
+      var c=o?val(it.id+"_c"):"";if(c)doc.text(c+(it.choice==="count"?" stuks":""),C1,y+4.6,{maxWidth:(b.status?C2:M+W)-C1-2});
+      var s=o&&b.status?val(it.id+"_s"):"";
+      if(s){doc.setFont("helvetica","bold");if(s===statusOpts[0])doc.setTextColor(46,107,58);else doc.setTextColor(192,80,0);doc.text(s,C2,y+4.6,{maxWidth:M+W-C2});}
+      y+=6.5;
+    }
+    var n=doc.getNumberOfPages();
+    for(var i=1;i<=n;i++){doc.setPage(i);doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.setTextColor.apply(doc,GR);
+      doc.text(cfg.footer||"Vertrouwelijk - bevat persoonsgegevens (AVG)",M,290);doc.text("Pagina "+i+" van "+n,210-M,290,{align:"right"});}
+    return doc;
+  }
+  function mailBody(){
+    var t=["Beste IT,","","In de bijlage vind je de aanvraag “"+fileName()+"”.",""];
+    var fb=null;for(var i=0;i<cfg.blocks.length;i++)if(cfg.blocks[i].type==="fields"){fb=cfg.blocks[i];break;}
+    if(fb)(fb.fields||[]).forEach(function(f){if(f.type!=="textarea"&&visibleField(f)&&fval(f))t.push(f.label+": "+fval(f));});
+    t.push("","Met vriendelijke groet,");
+    return t.join("\n");
+  }
+  function openMail(){
+    var subj=tpl(cfg.mailSubject||"Aanvraag: {Personeelsnummer} - {Naam}");
+    location.href="mailto:"+cfg.itEmail+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(mailBody());
+  }
+  function doSave(andMail){
+    state.tried=true;var errs=validate();showErrs(errs);
+    if(errs.length){toastEl.hidden=true;errBox.scrollIntoView({block:"nearest",behavior:"smooth"});return;}
+    if(!window.jspdf){toast("De PDF-module kon niet laden. Controleer de internetverbinding en probeer het opnieuw.");return;}
+    var doc;try{doc=buildPdf();}catch(e){toast("De PDF maken lukte niet: "+e.message);return;}
+    var name=fileName();
+    Promise.resolve().then(function(){if(opts.savePdf)return opts.savePdf(name,doc.output("blob"));doc.save(name);}).then(function(r){
+      if(r==="declined"){toast("Opslaan geannuleerd.");return;}
+      if(andMail){
+        if(opts.preview){toast("PDF gemaakt. In het opgeslagen formulier opent nu ook de mail aan "+cfg.itEmail+".");return;}
+        toast("PDF opgeslagen. Voeg “"+name+"” toe als bijlage in de mail.");setTimeout(openMail,600);
+      }else toast("PDF opgeslagen als “"+name+"”.");
+    },function(e){toast("Opslaan lukte niet"+(e&&e.message?": "+e.message:"")+".");});
+  }
+  update();
+  return{update:update,validate:validate};
+}
+return{render:render,h:h,credit:credit,normalize:normalize};
+})();
+</script>
+<script>OBF.render(document.getElementById("app"),JSON.parse(document.getElementById("form-config").textContent));</script>
+</body>
+</html>

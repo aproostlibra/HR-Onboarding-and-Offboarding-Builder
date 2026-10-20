@@ -238,3 +238,4 @@ Designed by Antoine Troost.
 
 Every builder page and every form saved with it shows a small credit line, *"Designed by Antoine Troost - [current year]"*. The year updates automatically. The credit is part of the form runtime and is not intended to be removed.
 
+<!-- Add a LICENSE file and mention the licence here if you publish this repository. -->
